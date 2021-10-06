@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 			public void onClick(View view) {
 				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 						.setAction("Action", null).show();
+				new FirestoreConnector().accessUser("8mTBlhSKHIOf8rPakVqznnllSBh1");
 				startActivity(new Intent(MainActivity.this, ScannerActivity.class));
 			}
 		});

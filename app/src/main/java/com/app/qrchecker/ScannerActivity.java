@@ -109,7 +109,7 @@ public class ScannerActivity extends AppCompatActivity {
 			public void receiveDetections(Detector.Detections<Barcode> detections) {
 				final SparseArray<Barcode> barcodes = detections.getDetectedItems();
 				if (barcodes.size() != 0) {
-					txtBarcodeValue.post(new Runnable() {
+					/*txtBarcodeValue.post(new Runnable() {
 						@Override
 						public void run() {
 
@@ -126,7 +126,7 @@ public class ScannerActivity extends AppCompatActivity {
 								txtBarcodeValue.setText(intentData);
 							}
 						}
-					});
+					});*/
 				}
 			}
 		});
