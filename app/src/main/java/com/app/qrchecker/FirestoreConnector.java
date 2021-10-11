@@ -20,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 
 import java.time.LocalDateTime;
@@ -33,6 +34,7 @@ public class FirestoreConnector {
 	private static  CollectionReference logCollection;
 	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/YYYY-HH:mm:ss");
 	private static String env="dev";
+	private static String year="2021";
 	public FirestoreConnector(){
 		initFirebase();
 	}
@@ -41,9 +43,9 @@ public class FirestoreConnector {
 		if(db == null)
 			db = FirebaseFirestore.getInstance();
 		if(userCollection == null)
-			userCollection = db.collection("hackeps-2021").document(env).collection("users");
+			userCollection = db.collection("hackeps-"+year).document(env).collection("users");
 		if(logCollection == null)
-			logCollection = db.collection("hackeps-2021").document(env).collection("log");
+			logCollection = db.collection("hackeps-"+year).document(env).collection("log");
 
 	}
 /*
@@ -75,16 +77,22 @@ public class FirestoreConnector {
 		});
 	}*/
 
-	public static void registerUser(String uid, RelativeLayout c){
+	public static void registerUser(String uid, ScannerActivity c){
 		initFirebase();
 		db.runTransaction(new Transaction.Function<Void>() {
 			@Override
 			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
 				DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
-				if(snapshot.exists() && !snapshot.getBoolean("registered")){
-					transaction.update(userCollection.document(uid),"registered",true);
+				Map<String, Object> data = new HashMap<>();
+				data.put("accesTime", dtf.format(LocalDateTime.now()));
+
+				//DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
+				if(snapshot.exists()){
+					transaction.set(logCollection.document(uid),data, SetOptions.merge());
+					//transaction.update(userCollection.document(uid),"registered",true);
+					c.log(false,"User registered");
 				}
-				else c.setBackgroundColor(Color.BLUE);
+				else c.log(true,"User not existent");
 				// Success
 				return null;
 			}

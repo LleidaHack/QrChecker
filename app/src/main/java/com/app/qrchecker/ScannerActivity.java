@@ -2,6 +2,7 @@ package com.app.qrchecker;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 //import android.support.v4.app.ActivityCompat;
@@ -46,13 +47,14 @@ public class ScannerActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_scanner);
 		initViews();
 		opt=ScanOptions.values()[getIntent().getExtras().getInt("ScanOption")];
+		findViewById(R.id.scan_lay).setBackgroundColor(Color.BLUE);
 	}
 
 	private void initViews() {
-		txtBarcodeValue = findViewById(R.id.txtBarcodeValue);
+		//txtBarcodeValue = findViewById(R.id.txtBarcodeValue);
 		surfaceView = findViewById(R.id.surfaceView);
-		btnAction = findViewById(R.id.btnAction);
-		btnAction.setOnClickListener(new View.OnClickListener() {
+		//btnAction = findViewById(R.id.btnAction);
+		/*btnAction.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (intentData.length() > 0) {
@@ -63,7 +65,7 @@ public class ScannerActivity extends AppCompatActivity {
 					}
 				}
 			}
-		});
+		});*/
 	}
 
 	private void initialiseDetectorsAndSources() {
@@ -74,7 +76,7 @@ public class ScannerActivity extends AppCompatActivity {
 				.build();
 
 		cameraSource = new CameraSource.Builder(this, barcodeDetector)
-				.setRequestedPreviewSize(1920, 1080)
+				.setRequestedPreviewSize(1000, 1000)
 				.setAutoFocusEnabled(true) //you should add this feature
 				.build();
 
@@ -116,24 +118,6 @@ public class ScannerActivity extends AppCompatActivity {
 				final SparseArray<Barcode> barcodes = detections.getDetectedItems();
 				if (barcodes.size() != 0) {
 					executeOperation(barcodes.valueAt(0));
-					/*txtBarcodeValue.post(new Runnable() {
-						@Override
-						public void run() {
-
-							if (barcodes.valueAt(0).email != null) {
-								txtBarcodeValue.removeCallbacks(null);
-								intentData = barcodes.valueAt(0).email.address;
-								txtBarcodeValue.setText(intentData);
-								isEmail = true;
-								btnAction.setText("ADD CONTENT TO THE MAIL");
-							} else {
-								isEmail = false;
-								btnAction.setText("LAUNCH URL");
-								intentData = barcodes.valueAt(0).displayValue;
-								txtBarcodeValue.setText(intentData);
-							}
-						}
-					});*/
 				}
 			}
 		});
@@ -141,11 +125,16 @@ public class ScannerActivity extends AppCompatActivity {
 
 	private void executeOperation(Barcode barcode) {
 		Log.d("TEST QR",barcode.displayValue);
-		RelativeLayout rl = (RelativeLayout)findViewById(R.id.scan_lay);
-		if(opt==ScanOptions.REGISTER) FirestoreConnector.registerUser(barcode.displayValue,rl);
+		if(opt==ScanOptions.REGISTER) FirestoreConnector.registerUser(barcode.displayValue,this);
 
 	}
 
+	public void log(boolean error,String errorMsg){
+		TextView txt=findViewById(R.id.log);
+		int color=error?Color.RED:Color.GREEN;
+		txt.setText(errorMsg);
+		txt.setBackgroundColor(color);
+	}
 
 	@Override
 	protected void onPause() {
