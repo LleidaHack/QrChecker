@@ -1,33 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <com.google.android.material.appbar.AppBarLayout
+    tools:context=".MainActivity"
+    android:id="@+id/relId"
+    android:background="@color/background">
+    <ImageView
+        android:id="@+id/logo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/logo_gris"></ImageView>
+    <Button
+        android:id="@+id/acces"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Acces"
+        android:backgroundTint=" #C4C4C4"></Button>
+    <Button
+        android:id="@+id/registre"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/acces"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Registre"
+        android:backgroundTint="@color/btn_color"></Button>
+    <Button
+        android:id="@+id/menjar"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/registre"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Menjar"
+        android:backgroundTint=" #C4C4C4"></Button>
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-35dp"
+        android:src="@drawable/skyline"></ImageView>
 
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <include layout="@layout/content_main" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>

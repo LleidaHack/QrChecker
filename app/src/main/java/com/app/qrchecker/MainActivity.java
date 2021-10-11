@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,9 +23,8 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-		Spinner dropdown = findViewById(R.id.spinner);
+		setButtons();
+		/*Spinner dropdown = findViewById(R.id.spinner);
 		String[] items = new String[]{"Acces", "Menjar", "Registre"};
 		ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
 		dropdown.setAdapter(adapter);
@@ -36,7 +37,37 @@ public class MainActivity extends AppCompatActivity {
 				new FirestoreConnector().accessUser("8mTBlhSKHIOf8rPakVqznnllSBh1");
 				startActivity(new Intent(MainActivity.this, ScannerActivity.class));
 			}
+		});*/
+	}
+
+	private void setButtons() {
+		Button access=findViewById(R.id.acces);
+		Button register=findViewById(R.id.registre);
+		Button menjar=findViewById(R.id.menjar);
+		access.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				gotoScan(ScanOptions.ACCESS);
+			}
 		});
+		register.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				gotoScan(ScanOptions.REGISTER);
+			}
+		});
+		menjar.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				gotoScan(ScanOptions.EAT);
+			}
+		});
+	}
+
+	public void gotoScan(ScanOptions opt) {
+		//new FirestoreConnector().accessUser("8mTBlhSKHIOf8rPakVqznnllSBh1");
+		if(opt==ScanOptions.EAT) startActivity(new Intent(MainActivity.this, ScannerActivity.class));
+		else startActivity(new Intent(MainActivity.this, ScannerActivity.class).putExtra("ScanOption",opt.ordinal()));
 	}
 
 	@Override

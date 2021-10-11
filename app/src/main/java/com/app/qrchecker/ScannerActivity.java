@@ -6,11 +6,13 @@ import android.net.Uri;
 import android.os.Bundle;
 //import android.support.v4.app.ActivityCompat;
 //import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +23,8 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.io.IOException;
 
 public class ScannerActivity extends AppCompatActivity {
@@ -34,12 +38,14 @@ public class ScannerActivity extends AppCompatActivity {
 	Button btnAction;
 	String intentData = "";
 	boolean isEmail = false;
+	private ScanOptions opt;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_scanner);
 		initViews();
+		opt=ScanOptions.values()[getIntent().getExtras().getInt("ScanOption")];
 	}
 
 	private void initViews() {
@@ -109,6 +115,7 @@ public class ScannerActivity extends AppCompatActivity {
 			public void receiveDetections(Detector.Detections<Barcode> detections) {
 				final SparseArray<Barcode> barcodes = detections.getDetectedItems();
 				if (barcodes.size() != 0) {
+					executeOperation(barcodes.valueAt(0));
 					/*txtBarcodeValue.post(new Runnable() {
 						@Override
 						public void run() {
@@ -130,6 +137,13 @@ public class ScannerActivity extends AppCompatActivity {
 				}
 			}
 		});
+	}
+
+	private void executeOperation(Barcode barcode) {
+		Log.d("TEST QR",barcode.displayValue);
+		RelativeLayout rl = (RelativeLayout)findViewById(R.id.scan_lay);
+		if(opt==ScanOptions.REGISTER) FirestoreConnector.registerUser(barcode.displayValue,rl);
+
 	}
 
 
