@@ -14,8 +14,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,14 +43,14 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void setButtons() {
+		MainActivity m=this;
 		Button access=findViewById(R.id.acces);
 		Button register=findViewById(R.id.registre);
 		Button menjar=findViewById(R.id.menjar);
+		ImageView refresh=findViewById(R.id.refresh);
 		access.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				gotoScan(ScanOptions.ACCESS);
-			}
+			public void onClick(View v) { gotoScan(ScanOptions.ACCESS); }
 		});
 		register.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -59,15 +61,24 @@ public class MainActivity extends AppCompatActivity {
 		menjar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				gotoScan(ScanOptions.EAT);
+				FirestoreConnector.eatUser("",EatOptions.DINAR,null);
+				//gotoScan(ScanOptions.EAT);
 			}
 		});
+		refresh.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FirestoreConnector.getUsers(m);
+			}
+		});
+		FirestoreConnector.getUsers(m);
 	}
 
 	public void gotoScan(ScanOptions opt) {
 		//new FirestoreConnector().accessUser("8mTBlhSKHIOf8rPakVqznnllSBh1");
-		if(opt==ScanOptions.EAT) startActivity(new Intent(MainActivity.this, ScannerActivity.class));
-		else startActivity(new Intent(MainActivity.this, ScannerActivity.class).putExtra("ScanOption",opt.ordinal()));
+		//if(opt==ScanOptions.EAT) startActivity(new Intent(MainActivity.this, ScannerActivity.class));
+		//else
+		startActivity(new Intent(MainActivity.this, ScannerActivity.class).putExtra("ScanOption",opt.ordinal()));
 	}
 
 	@Override
@@ -90,5 +101,16 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	public void setUsers(int size) {
+		TextView access=findViewById(R.id.users);
+		access.setText("users -> "+size);
+	}
+
+	public void setRegUsers(int size) {
+		TextView access=findViewById(R.id.regUsers);
+		access.setText("registered users -> "+size);
+
 	}
 }

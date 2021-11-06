@@ -19,16 +19,16 @@
         android:layout_height="50dp"
         android:layout_below="@id/logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="@dimen/marginTop"
         android:text="Acces"
-        android:backgroundTint=" #C4C4C4"></Button>
+        android:backgroundTint="@color/btn_color"></Button>
     <Button
         android:id="@+id/registre"
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_below="@id/acces"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="@dimen/marginTop"
         android:text="Registre"
         android:backgroundTint="@color/btn_color"></Button>
     <Button
@@ -37,9 +37,58 @@
         android:layout_height="50dp"
         android:layout_below="@id/registre"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="@dimen/marginTop"
         android:text="Menjar"
-        android:backgroundTint=" #C4C4C4"></Button>
+        android:backgroundTint="@color/btn_color"></Button>
+    <ImageView
+        android:id="@+id/refresh"
+        android:src="@drawable/refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/menjar"
+        android:layout_marginTop="65dp"
+        android:layout_marginLeft="120dp"></ImageView>
+    <TextView
+        android:id="@+id/users"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/menjar"
+        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@id/refresh"
+        android:text="users -> "></TextView>
+    <TextView
+        android:id="@+id/regUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/users"
+        android:layout_toRightOf="@id/refresh"
+        android:layout_marginLeft="20dp"
+        android:text="registered users -> "></TextView>
+    <TextView
+        android:id="@+id/esmorzarUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/regUsers"
+        android:layout_toRightOf="@id/refresh"
+        android:layout_marginLeft="20dp"
+        android:text="users(esmorzar) -> "></TextView>
+    <TextView
+        android:id="@+id/dinarUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/esmorzarUsers"
+        android:layout_toRightOf="@id/refresh"
+        android:layout_marginLeft="20dp"
+        android:text="users(dinar) -> "></TextView>
+    <TextView
+        android:id="@+id/soparUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dinarUsers"
+        android:layout_toRightOf="@id/refresh"
+        android:layout_marginLeft="20dp"
+        android:text="users(dinar) -> "></TextView>
 
     <ImageView
         android:layout_width="match_parent"
