@@ -1,19 +1,13 @@
 package com.app.qrchecker;
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-//import android.support.v4.app.ActivityCompat;
-//import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +18,6 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 
@@ -47,25 +40,10 @@ public class ScannerActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_scanner);
 		initViews();
 		opt=ScanOptions.values()[getIntent().getExtras().getInt("ScanOption")];
-		findViewById(R.id.scan_lay).setBackgroundColor(Color.BLUE);
 	}
 
 	private void initViews() {
-		//txtBarcodeValue = findViewById(R.id.txtBarcodeValue);
 		surfaceView = findViewById(R.id.surfaceView);
-		//btnAction = findViewById(R.id.btnAction);
-		/*btnAction.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (intentData.length() > 0) {
-					if (isEmail)
-						startActivity(new Intent(ScannerActivity.this, ScannerActivity.class).putExtra("email_address", intentData));
-					else {
-						startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(intentData)));
-					}
-				}
-			}
-		});*/
 	}
 
 	private void initialiseDetectorsAndSources() {

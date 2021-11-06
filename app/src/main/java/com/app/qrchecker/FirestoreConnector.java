@@ -1,11 +1,6 @@
 package com.app.qrchecker;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
-import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -17,8 +12,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
@@ -26,18 +19,20 @@ import com.google.firebase.firestore.Transaction;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class FirestoreConnector {
+public abstract class FirestoreConnector {
 	private static FirebaseFirestore db;
-	private static CollectionReference userCollection;
-	private static  CollectionReference logCollection;
 	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/YYYY-HH:mm:ss");
+
+	private static CollectionReference userCollection;
+	private static CollectionReference logCollection;
+	private static CollectionReference eatCollection;
+
 	private static String env="dev";
 	private static String year="2021";
-	public FirestoreConnector(){
-		initFirebase();
-	}
+
 
 	private static void initFirebase() {
 		if(db == null)
@@ -46,36 +41,9 @@ public class FirestoreConnector {
 			userCollection = db.collection("hackeps-"+year).document(env).collection("users");
 		if(logCollection == null)
 			logCollection = db.collection("hackeps-"+year).document(env).collection("log");
-
+		if(eatCollection == null)
+			eatCollection =db.collection("events");
 	}
-/*
-	void runTransaction(){
-		db.runTransaction(new Transaction.Function<Void>() {
-			@Override
-			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-				DocumentSnapshot snapshot = transaction.get(sfDocRef);
-
-				// Note: this could be done without a transaction
-				//       by updating the population using FieldValue.increment()
-				double newPopulation = snapshot.getDouble("population") + 1;
-				transaction.update(sfDocRef, "population", newPopulation);
-
-				// Success
-				return null;
-			}
-		}).addOnSuccessListener(new OnSuccessListener<Void>() {
-			@Override
-			public void onSuccess(Void aVoid) {
-				//Log.d(TAG, "Transaction success!");
-			}
-		})
-		.addOnFailureListener(new OnFailureListener() {
-			@Override
-			public void onFailure(@NonNull Exception e) {
-				//Log.w(TAG, "Transaction failure.", e);
-			}
-		});
-	}*/
 
 	public static void registerUser(String uid, ScannerActivity c){
 		initFirebase();
@@ -84,7 +52,7 @@ public class FirestoreConnector {
 			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
 				DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
 				Map<String, Object> data = new HashMap<>();
-				data.put("accesTime", dtf.format(LocalDateTime.now()));
+				data.put("lastAccessTime", dtf.format(LocalDateTime.now()));
 
 				//DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
 				if(snapshot.exists()){
@@ -96,22 +64,57 @@ public class FirestoreConnector {
 				// Success
 				return null;
 			}
-		}).addOnSuccessListener(new OnSuccessListener<Void>() {
-			@Override
-			public void onSuccess(Void aVoid) {
-				//throw new RuntimeException("");
-			}
-		})
-		.addOnFailureListener(new OnFailureListener() {
-			@Override
-			public void onFailure(@NonNull Exception e) {
-				//Log.w(TAG, "Transaction failure.", e);
-			}
 		});
 
 	}
-	public void accessUser(String uid){
-
+	public static void getUsers(MainActivity c){
+		initFirebase();
+		//todo: end this
+		db.runTransaction(new Transaction.Function<Void>() {
+			@Override
+			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+				Task<QuerySnapshot> usr=userCollection.get();
+				Task<QuerySnapshot> log=logCollection.get();
+				Task<QuerySnapshot> logE=eatCollection.get();
+				usr.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+					@Override
+					public void onComplete(@NonNull Task<QuerySnapshot> task) {
+						if (task.isSuccessful()) {
+							List<DocumentSnapshot> out=task.getResult().getDocuments();
+							c.setUsers(out.size());
+						} else {
+							//Log.d(TAG, "Error getting documents: ", task.getException());
+						}
+					}
+				});
+				log.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+					@Override
+					public void onComplete(@NonNull Task<QuerySnapshot> task) {
+						if (task.isSuccessful()) {
+							List<DocumentSnapshot> out=task.getResult().getDocuments();
+							c.setRegUsers(out.size());
+						} else {
+							//Log.d(TAG, "Error getting documents: ", task.getException());
+						}
+					}
+				});
+				logE.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+					@Override
+					public void onComplete(@NonNull Task<QuerySnapshot> task) {
+						if (task.isSuccessful()) {
+							List<DocumentSnapshot> out=task.getResult().getDocuments();
+							c.setRegUsers(out.size());
+						} else {
+							//Log.d(TAG, "Error getting documents: ", task.getException());
+						}
+					}
+				});
+				return null;
+			}
+		});
+	}
+	public static void accessUser(String uid){
+		//finish this function
 		LocalDateTime now = LocalDateTime.now();
 		Map<String, Object> data = new HashMap<>();
 		logCollection.document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -148,32 +151,36 @@ public class FirestoreConnector {
 				});
 
 	}
-	public void checkUser(){
-		Query query = userCollection.whereEqualTo("uid", "0gIqnwC6BRhREctO0Mm1kmcRpAh1");
-		query.get()
-				.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-					@Override
-					public void onComplete(@NonNull Task<QuerySnapshot> task) {
-						if (task.isSuccessful()) {
-							for (QueryDocumentSnapshot document : task.getResult()) {
-								Log.d("FIREBASE", document.getId() + " => " + document.getData());
-							}
-						} else {
-							Log.d("FIREBASE", "Error getting documents: ", task.getException());
-						}
+	public static void eatUser(String uid,EatOptions eat,ScannerActivity c){
+		initFirebase();
+		db.runTransaction(new Transaction.Function<Void>() {
+			@Override
+			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+				DocumentSnapshot snapshotEat = transaction.get(eatCollection.document(eat.name()).collection("users").document(uid));
+				//List<String> lst= (List<String>) snapshotEat.get("users");
+				DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
+				if(snapshot.exists()){
+					if(snapshotEat.exists()){
+					}else{
+						
+						c.log(false,"User registered");
 					}
-				});
-		/*userCol.get()
-				.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-					@Override
-					public void onComplete(@NonNull Task<QuerySnapshot> task) {
-						if (task.isSuccessful()) {
-							for (QueryDocumentSnapshot document : task.getResult()) {
-							}
-						} else {
-						}
-					}
-				});*/
+				}
+				else c.log(true,"User not existent");
+				// Success
+				return null;
+			}
+		}).addOnSuccessListener(new OnSuccessListener<Void>() {
+			@Override
+			public void onSuccess(Void aVoid) {
+				//throw new RuntimeException("");
+			}
+		})
+		.addOnFailureListener(new OnFailureListener() {
+			@Override
+			public void onFailure(@NonNull Exception e) {
+				//Log.w(TAG, "Transaction failure.", e);
+			}
+		});
 	}
-
 }
