@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
 		menjar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FirestoreConnector.eatUser("",EatOptions.DINAR,null);
+				//todo -> Implementar el leer comidas/cena/desayuno
+				FirestoreConnector.eatUser("",EatOptions.lunch_sat,null);
 				//gotoScan(ScanOptions.EAT);
 			}
 		});
@@ -111,6 +112,19 @@ public class MainActivity extends AppCompatActivity {
 	public void setRegUsers(int size) {
 		TextView access=findViewById(R.id.regUsers);
 		access.setText("registered users -> "+size);
+	}
+	public void setSatLunch(int size) {
+		TextView access=findViewById(R.id.esmorzarUsers);
+		access.setText("Usuaris dinats (Dissabte) -> "+size);
+	}
 
+	public void setSatDin(int size) {
+		TextView access=findViewById(R.id.dinarUsers);
+		access.setText("Usuaris sopats -> "+size);
+	}
+
+	public void setSunLunch(int size) {
+		TextView access=findViewById(R.id.soparUsers);
+		access.setText("Usuaris dinats (Diumenge) -> "+size);
 	}
 }
