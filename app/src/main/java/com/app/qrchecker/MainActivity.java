@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 			public void onClick(View v) {
 				//todo -> Implementar el leer comidas/cena/desayuno
 				//FirestoreConnector.eatUser("",EatOptions.lunch_sat,null);
-				gotoScan(ScanOptions.EAT);
+				gotoScan(ScanOptions.EAT, EatOptions.lunch_sat);
 			}
 		});
 		refresh.setOnClickListener(new View.OnClickListener() {

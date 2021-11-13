@@ -211,13 +211,13 @@ public abstract class FirestoreConnector {
 
 					if(snapshotEat.exists()){
 						// El usuario ya ha comido
-						c.log(true,"Aquest usuari ja ha dinat...");
+						c.log(true,"User action already registered");
 					}else{
 						Map<String, Object> data = new HashMap<>();
 						data.put("eatTime", dtf.format(LocalDateTime.now()));
 						//EAT
 						transaction.set(collection.document(uid),data, SetOptions.merge());
-						c.log(false,"Usuari detectat correctament");
+						c.log(false,"User action registered");
 					}
 				}
 				else c.log(true,"User not registered");
