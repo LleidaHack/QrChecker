@@ -18,8 +18,11 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.type.DateTime;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 public class ScannerActivity extends AppCompatActivity {
 
@@ -33,7 +36,8 @@ public class ScannerActivity extends AppCompatActivity {
 	String intentData = "";
 	boolean isEmail = false;
 	private ScanOptions opt;
-
+	private String last_barcode_value;
+	private Date last_barcode_scan;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -68,7 +72,6 @@ public class ScannerActivity extends AppCompatActivity {
 						ActivityCompat.requestPermissions(ScannerActivity.this, new
 								String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
 					}
-
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -102,9 +105,18 @@ public class ScannerActivity extends AppCompatActivity {
 	}
 
 	private void executeOperation(Barcode barcode) {
-		Log.d("TEST QR",barcode.displayValue);
-		if(opt==ScanOptions.REGISTER) FirestoreConnector.registerUser(barcode.displayValue,this);
-
+		//TODO ACCESS
+		if (!barcode.displayValue.equals(last_barcode_value) ||
+				(last_barcode_scan != null && last_barcode_scan.getTime() - System.currentTimeMillis() > 2000 )) {
+			Log.d("TEST QR", barcode.displayValue);
+			if (opt == ScanOptions.REGISTER)
+				FirestoreConnector.registerUser(barcode.displayValue, this);
+			else if (opt == ScanOptions.EAT) {
+				EatOptions eatType = (EatOptions) getIntent().getSerializableExtra("eatType");
+				FirestoreConnector.eatUser(barcode.displayValue, eatType, this);
+			}
+			last_barcode_value = barcode.displayValue;
+		}
 	}
 
 	public void log(boolean error,String errorMsg){

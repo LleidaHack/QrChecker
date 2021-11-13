@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class FirestoreConnector {
+	//TODO Some code style improvements
 	private static FirebaseFirestore db;
 	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/YYYY-HH:mm:ss");
 
@@ -68,6 +69,8 @@ public abstract class FirestoreConnector {
 
 				//DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
 				if(snapshot.exists()){
+					// TODO Faltaria revisar que el usuario no este ya registrado
+
 					transaction.set(logCollection.document(uid),data, SetOptions.merge());
 					//transaction.update(userCollection.document(uid),"registered",true);
 					c.log(false,"User registered");
@@ -81,7 +84,6 @@ public abstract class FirestoreConnector {
 	}
 	public static void getUsers(MainActivity c){
 		initFirebase();
-		//todo: end this <-- Best todo ever
 		db.runTransaction(new Transaction.Function<Void>() {
 			@Override
 			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
@@ -150,7 +152,7 @@ public abstract class FirestoreConnector {
 		});
 	}
 	public static void accessUser(String uid){
-		//finish this function
+		//TODO finish this function
 		LocalDateTime now = LocalDateTime.now();
 		Map<String, Object> data = new HashMap<>();
 		logCollection.document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -192,18 +194,33 @@ public abstract class FirestoreConnector {
 		db.runTransaction(new Transaction.Function<Void>() {
 			@Override
 			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-				DocumentSnapshot snapshotEat = transaction.get(satLunchCollection.document(eat.name())
-						.collection("users").document(uid));
+
+				CollectionReference collection = null;
+				if (eat == EatOptions.lunch_sat)
+					collection = satLunchCollection;
+				else if (eat == EatOptions.dinner_sat)
+					collection = satDinnerCollection;
+				else if (eat == EatOptions.lunch_sun)
+					collection = sunLunchCollection;
+
 				//List<String> lst= (List<String>) snapshotEat.get("users");
-				DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
+				DocumentSnapshot snapshot = transaction.get(logCollection.document(uid));
+
 				if(snapshot.exists()){
+					DocumentSnapshot snapshotEat = transaction.get(collection.document(uid));
+
 					if(snapshotEat.exists()){
+						// El usuario ya ha comido
+						c.log(true,"Aquest usuari ja ha dinat...");
 					}else{
-						
-						c.log(false,"User registered");
+						Map<String, Object> data = new HashMap<>();
+						data.put("eatTime", dtf.format(LocalDateTime.now()));
+						//EAT
+						transaction.set(collection.document(uid),data, SetOptions.merge());
+						c.log(false,"Usuari detectat correctament");
 					}
 				}
-				else c.log(true,"User not existent");
+				else c.log(true,"User not registered");
 				// Success
 				return null;
 			}
