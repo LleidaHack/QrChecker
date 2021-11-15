@@ -26,20 +26,6 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		setButtons();
-		/*Spinner dropdown = findViewById(R.id.spinner);
-		String[] items = new String[]{"Acces", "Menjar", "Registre"};
-		ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
-		dropdown.setAdapter(adapter);
-		FloatingActionButton fab = findViewById(R.id.fab);
-		fab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-						.setAction("Action", null).show();
-				new FirestoreConnector().accessUser("8mTBlhSKHIOf8rPakVqznnllSBh1");
-				startActivity(new Intent(MainActivity.this, ScannerActivity.class));
-			}
-		});*/
 	}
 
 	private void setButtons() {
@@ -61,8 +47,9 @@ public class MainActivity extends AppCompatActivity {
 		menjar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FirestoreConnector.eatUser("",EatOptions.DINAR,null);
-				//gotoScan(ScanOptions.EAT);
+				//todo -> Implementar el leer comidas/cena/desayuno
+				//FirestoreConnector.eatUser("",EatOptions.lunch_sat,null);
+				gotoScan(ScanOptions.EAT, EatOptions.lunch_sat);
 			}
 		});
 		refresh.setOnClickListener(new View.OnClickListener() {
@@ -73,12 +60,14 @@ public class MainActivity extends AppCompatActivity {
 		});
 		FirestoreConnector.getUsers(m);
 	}
+	public void gotoScan(ScanOptions opt, EatOptions eatType) {
 
+		startActivity(new Intent(MainActivity.this, ScannerActivity.class)
+				.putExtra("ScanOption",opt.ordinal()).putExtra("eatType", eatType));
+	}
 	public void gotoScan(ScanOptions opt) {
-		//new FirestoreConnector().accessUser("8mTBlhSKHIOf8rPakVqznnllSBh1");
-		//if(opt==ScanOptions.EAT) startActivity(new Intent(MainActivity.this, ScannerActivity.class));
-		//else
-		startActivity(new Intent(MainActivity.this, ScannerActivity.class).putExtra("ScanOption",opt.ordinal()));
+
+		gotoScan(opt, null);
 	}
 
 	@Override
@@ -111,6 +100,19 @@ public class MainActivity extends AppCompatActivity {
 	public void setRegUsers(int size) {
 		TextView access=findViewById(R.id.regUsers);
 		access.setText("registered users -> "+size);
+	}
+	public void setSatLunch(int size) {
+		TextView access=findViewById(R.id.esmorzarUsers);
+		access.setText("Usuaris dinats (Dissabte) -> "+size);
+	}
 
+	public void setSatDin(int size) {
+		TextView access=findViewById(R.id.dinarUsers);
+		access.setText("Usuaris sopats -> "+size);
+	}
+
+	public void setSunLunch(int size) {
+		TextView access=findViewById(R.id.soparUsers);
+		access.setText("Usuaris dinats (Diumenge) -> "+size);
 	}
 }

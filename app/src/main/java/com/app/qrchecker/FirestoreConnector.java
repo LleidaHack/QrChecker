@@ -23,12 +23,15 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class FirestoreConnector {
+	//TODO Some code style improvements
 	private static FirebaseFirestore db;
 	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/YYYY-HH:mm:ss");
 
 	private static CollectionReference userCollection;
 	private static CollectionReference logCollection;
-	private static CollectionReference eatCollection;
+	private static CollectionReference satLunchCollection;
+	private static CollectionReference satDinnerCollection;
+	private static CollectionReference sunLunchCollection;
 
 	private static String env="dev";
 	private static String year="2021";
@@ -41,8 +44,18 @@ public abstract class FirestoreConnector {
 			userCollection = db.collection("hackeps-"+year).document(env).collection("users");
 		if(logCollection == null)
 			logCollection = db.collection("hackeps-"+year).document(env).collection("log");
-		if(eatCollection == null)
-			eatCollection =db.collection("events");
+		if(satLunchCollection == null)
+			satLunchCollection = db.collection("hackeps-"+year).document(env).collection("events")
+					.document("eats").collection("lunch_sat");
+
+		if(satDinnerCollection == null)
+			satDinnerCollection = db.collection("hackeps-"+year).document(env).collection("events")
+					.document("eats").collection("dinner_sat");
+
+		if(sunLunchCollection == null)
+			sunLunchCollection = db.collection("hackeps-"+year).document(env).collection("events")
+					.document("eats").collection("lunch_sun");
+
 	}
 
 	public static void registerUser(String uid, ScannerActivity c){
@@ -56,6 +69,8 @@ public abstract class FirestoreConnector {
 
 				//DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
 				if(snapshot.exists()){
+					// TODO Faltaria revisar que el usuario no este ya registrado
+
 					transaction.set(logCollection.document(uid),data, SetOptions.merge());
 					//transaction.update(userCollection.document(uid),"registered",true);
 					c.log(false,"User registered");
@@ -69,13 +84,14 @@ public abstract class FirestoreConnector {
 	}
 	public static void getUsers(MainActivity c){
 		initFirebase();
-		//todo: end this
 		db.runTransaction(new Transaction.Function<Void>() {
 			@Override
 			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
 				Task<QuerySnapshot> usr=userCollection.get();
 				Task<QuerySnapshot> log=logCollection.get();
-				Task<QuerySnapshot> logE=eatCollection.get();
+				Task<QuerySnapshot> satLunch=satLunchCollection.get();
+				Task<QuerySnapshot> satDin=satDinnerCollection.get();
+				Task<QuerySnapshot> sunLunch=sunLunchCollection.get();
 				usr.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 					@Override
 					public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -98,12 +114,34 @@ public abstract class FirestoreConnector {
 						}
 					}
 				});
-				logE.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+				satLunch.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 					@Override
 					public void onComplete(@NonNull Task<QuerySnapshot> task) {
 						if (task.isSuccessful()) {
 							List<DocumentSnapshot> out=task.getResult().getDocuments();
-							c.setRegUsers(out.size());
+							c.setSatLunch(out.size());
+						} else {
+							//Log.d(TAG, "Error getting documents: ", task.getException());
+						}
+					}
+				});
+				satDin.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+					@Override
+					public void onComplete(@NonNull Task<QuerySnapshot> task) {
+						if (task.isSuccessful()) {
+							List<DocumentSnapshot> out=task.getResult().getDocuments();
+							c.setSatDin(out.size());
+						} else {
+							//Log.d(TAG, "Error getting documents: ", task.getException());
+						}
+					}
+				});
+				sunLunch.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+					@Override
+					public void onComplete(@NonNull Task<QuerySnapshot> task) {
+						if (task.isSuccessful()) {
+							List<DocumentSnapshot> out=task.getResult().getDocuments();
+							c.setSunLunch(out.size());
 						} else {
 							//Log.d(TAG, "Error getting documents: ", task.getException());
 						}
@@ -114,7 +152,7 @@ public abstract class FirestoreConnector {
 		});
 	}
 	public static void accessUser(String uid){
-		//finish this function
+		//TODO finish this function
 		LocalDateTime now = LocalDateTime.now();
 		Map<String, Object> data = new HashMap<>();
 		logCollection.document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -156,17 +194,33 @@ public abstract class FirestoreConnector {
 		db.runTransaction(new Transaction.Function<Void>() {
 			@Override
 			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-				DocumentSnapshot snapshotEat = transaction.get(eatCollection.document(eat.name()).collection("users").document(uid));
+
+				CollectionReference collection = null;
+				if (eat == EatOptions.lunch_sat)
+					collection = satLunchCollection;
+				else if (eat == EatOptions.dinner_sat)
+					collection = satDinnerCollection;
+				else if (eat == EatOptions.lunch_sun)
+					collection = sunLunchCollection;
+
 				//List<String> lst= (List<String>) snapshotEat.get("users");
-				DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
+				DocumentSnapshot snapshot = transaction.get(logCollection.document(uid));
+
 				if(snapshot.exists()){
+					DocumentSnapshot snapshotEat = transaction.get(collection.document(uid));
+
 					if(snapshotEat.exists()){
+						// El usuario ya ha comido
+						c.log(true,"User action already registered");
 					}else{
-						
-						c.log(false,"User registered");
+						Map<String, Object> data = new HashMap<>();
+						data.put("eatTime", dtf.format(LocalDateTime.now()));
+						//EAT
+						transaction.set(collection.document(uid),data, SetOptions.merge());
+						c.log(false,"User action registered");
 					}
 				}
-				else c.log(true,"User not existent");
+				else c.log(true,"User not registered");
 				// Success
 				return null;
 			}
