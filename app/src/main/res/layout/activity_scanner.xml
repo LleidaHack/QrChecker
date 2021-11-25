@@ -1,53 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scan_lay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/activity_horizontal_margin"
-    android:id="@+id/scan_lay">
+    android:padding="@dimen/activity_horizontal_margin">
+
     <Button
         android:id="@+id/lunch_sat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/surfaceView"
+        android:layout_margin="10dp"
+        android:layout_marginTop="100dp"
         android:layout_marginBottom="30dp"
-        android:layout_marginRight="20dp"
-        android:text="lunch_sat"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="100dp"></Button>
+        android:layout_toLeftOf="@id/dinner_sat"
+        android:text="lunch_sat"></Button>
+
     <Button
         android:id="@+id/dinner_sat"
-        android:layout_toRightOf="@id/lunch_sat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="sopar diss"
         android:layout_above="@id/surfaceView"
-        android:layout_marginBottom="30dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="100dp"></Button>
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:bottomLeftRadius="10dp"
+        android:bottomRightRadius="10dp"
+
+        android:text="sopar diss"
+        android:topLeftRadius="10dp"
+        android:topRightRadius="10dp"></Button>
+
     <Button
         android:id="@+id/lunch_sun"
-        android:layout_toRightOf="@id/dinner_sat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="lunch_sat"
         android:layout_above="@id/surfaceView"
+        android:layout_margin="10dp"
+        android:layout_marginTop="100dp"
         android:layout_marginBottom="30dp"
-        android:layout_marginTop="100dp"></Button>
+        android:layout_toRightOf="@id/dinner_sat"
+        android:text="lunch_sat"></Button>
+
     <SurfaceView
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true" />
+
     <TextView
         android:id="@+id/log"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/surfaceView"
-        android:textSize="40dp"
         android:textAlignment="center"
-        android:textColor="#0A0A0A"></TextView>
+        android:textColor="#0A0A0A"
+        android:textSize="40dp"></TextView>
 </RelativeLayout>

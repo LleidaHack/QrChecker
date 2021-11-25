@@ -31,14 +31,16 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void setButtons() {
-		MainActivity m=this;
-		Button access=findViewById(R.id.acces);
-		Button register=findViewById(R.id.registre);
-		Button menjar=findViewById(R.id.menjar);
-		ImageView refresh=findViewById(R.id.refresh);
+		MainActivity m = this;
+		Button access = findViewById(R.id.acces);
+		Button register = findViewById(R.id.registre);
+		Button menjar = findViewById(R.id.menjar);
+		ImageView refresh = findViewById(R.id.refresh);
 		access.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) { gotoScan(ScanOptions.ACCESS); }
+			public void onClick(View v) {
+				gotoScan(ScanOptions.ACCESS);
+			}
 		});
 		register.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -62,59 +64,43 @@ public class MainActivity extends AppCompatActivity {
 		});
 		FirestoreConnector.getUsers(m);
 	}
+
 	public void gotoScan(ScanOptions opt, EatOptions eatType) {
 
 		startActivity(new Intent(MainActivity.this, ScannerActivity.class)
-				.putExtra("ScanOption",opt.ordinal()).putExtra("eatType", eatType));
+				.putExtra("ScanOption", opt.ordinal()).putExtra("eatType", eatType));
 	}
+
 	public void gotoScan(ScanOptions opt) {
 
 		gotoScan(opt, null);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_main, menu);
-		return true;
-	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
 
-		//noinspection SimplifiableIfStatement
-		if (id == R.id.action_settings) {
-			return true;
-		}
-
-		return super.onOptionsItemSelected(item);
-	}
 
 	public void setUsers(int size) {
-		TextView access=findViewById(R.id.users);
-		access.setText("users -> "+size);
+		TextView access = findViewById(R.id.users);
+		access.setText("users -> " + size);
 	}
 
 	public void setRegUsers(int size) {
-		TextView access=findViewById(R.id.regUsers);
-		access.setText("registered users -> "+size);
+		TextView access = findViewById(R.id.regUsers);
+		access.setText("registered users -> " + size);
 	}
+
 	public void setSatLunch(int size) {
-		TextView access=findViewById(R.id.esmorzarUsers);
-		access.setText("Usuaris dinats (Dissabte) -> "+size);
+		TextView access = findViewById(R.id.esmorzarUsers);
+		access.setText("Usuaris dinats (Dissabte) -> " + size);
 	}
 
 	public void setSatDin(int size) {
-		TextView access=findViewById(R.id.dinarUsers);
-		access.setText("Usuaris sopats -> "+size);
+		TextView access = findViewById(R.id.dinarUsers);
+		access.setText("Usuaris sopats -> " + size);
 	}
 
 	public void setSunLunch(int size) {
-		TextView access=findViewById(R.id.soparUsers);
-		access.setText("Usuaris dinats (Diumenge) -> "+size);
+		TextView access = findViewById(R.id.soparUsers);
+		access.setText("Usuaris dinats (Diumenge) -> " + size);
 	}
 }

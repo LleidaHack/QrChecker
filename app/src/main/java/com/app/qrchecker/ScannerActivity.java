@@ -1,4 +1,5 @@
 package com.app.qrchecker;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -40,15 +41,16 @@ public class ScannerActivity extends AppCompatActivity {
 	Button lsat;
 	Button lsun;
 	Button dsat;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.activity_scanner);
 		initViews();
-		opt=ScanOptions.values()[getIntent().getExtras().getInt("ScanOption")];
+		opt = ScanOptions.values()[getIntent().getExtras().getInt("ScanOption")];
 		showEatOptions(!opt.equals(ScanOptions.EAT));
-		if(opt.equals(ScanOptions.EAT)) {
+		if (opt.equals(ScanOptions.EAT)) {
 			setEatButtons();
 		}
 	}
@@ -58,48 +60,49 @@ public class ScannerActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				lsat.setBackgroundColor(Color.GREEN);
-				lsun.setBackgroundColor(Color.GRAY);
-				dsat.setBackgroundColor(Color.GRAY);
-				eopt=EatOptions.lunch_sat;
+				lsun.setBackgroundColor(R.color.btn_color);
+				dsat.setBackgroundColor(R.color.btn_color);
+				eopt = EatOptions.lunch_sat;
 			}
 		});
 		lsun.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				lsat.setBackgroundColor(Color.GRAY);
+				lsat.setBackgroundColor(R.color.btn_color);
 				lsun.setBackgroundColor(Color.GREEN);
-				dsat.setBackgroundColor(Color.GRAY);
-				eopt=EatOptions.lunch_sun;
+				dsat.setBackgroundColor(R.color.btn_color);
+				eopt = EatOptions.lunch_sun;
 			}
 		});
 		dsat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				lsat.setBackgroundColor(Color.GRAY);
-				lsun.setBackgroundColor(Color.GRAY);
+				lsat.setBackgroundColor(R.color.btn_color);
+				lsun.setBackgroundColor(R.color.btn_color);
 				dsat.setBackgroundColor(Color.GREEN);
-				eopt=EatOptions.dinner_sat;
+				eopt = EatOptions.dinner_sat;
 			}
 		});
 	}
 
-	private void showEatOptions(boolean hide){
-		int vis=hide? View.INVISIBLE:View.VISIBLE;
+	private void showEatOptions(boolean hide) {
+		int vis = hide ? View.INVISIBLE : View.VISIBLE;
 		lsat.setVisibility(vis);
 		lsat.setEnabled(!hide);
-		lsat.setBackgroundColor(Color.GRAY);
+		lsat.setBackgroundColor(R.color.btn_color);
 		lsun.setVisibility(vis);
 		lsun.setEnabled(!hide);
-		lsun.setBackgroundColor(Color.GRAY);
+		lsun.setBackgroundColor(R.color.btn_color);
 		dsat.setVisibility(vis);
 		dsat.setEnabled(!hide);
-		dsat.setBackgroundColor(Color.GRAY);
+		dsat.setBackgroundColor(R.color.btn_color);
 	}
+
 	private void initViews() {
 		surfaceView = findViewById(R.id.surfaceView);
-		lsat=findViewById(R.id.lunch_sat);
-		lsun=findViewById(R.id.lunch_sun);
-		dsat=findViewById(R.id.dinner_sat);
+		lsat = findViewById(R.id.lunch_sat);
+		lsun = findViewById(R.id.lunch_sun);
+		dsat = findViewById(R.id.dinner_sat);
 	}
 
 	private void initialiseDetectorsAndSources() {
@@ -159,28 +162,27 @@ public class ScannerActivity extends AppCompatActivity {
 	private void executeOperation(Barcode barcode) {
 		//TODO ACCESS
 		if (!barcode.displayValue.equals(last_barcode_value) ||
-				(last_barcode_scan != null && last_barcode_scan.getTime() - System.currentTimeMillis() > 2000 )) {
+				(last_barcode_scan != null && last_barcode_scan.getTime() - System.currentTimeMillis() > 2000)) {
 			//Log.d("TEST QR", barcode.displayValue);
 			if (opt == ScanOptions.REGISTER)
 				FirestoreConnector.registerUser(barcode.displayValue, this);
 			else if (opt == ScanOptions.EAT) {
-				if(eopt!=null)
-				//EatOptions eatType = (EatOptions) getIntent().getSerializableExtra("eatType");
+				if (eopt != null)
+					//EatOptions eatType = (EatOptions) getIntent().getSerializableExtra("eatType");
 					FirestoreConnector.eatUser(barcode.displayValue, eopt, this);
-			}
-			else if (opt == ScanOptions.ACCESS){
+			} else if (opt == ScanOptions.ACCESS) {
 				FirestoreConnector.accessUser(barcode.displayValue, this);
 			}
 			last_barcode_value = barcode.displayValue;
 		}
 	}
 
-	public void log(boolean error,String errorMsg){
+	public void log(boolean error, String errorMsg) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				TextView txt=findViewById(R.id.log);
-				int color=error?Color.RED:Color.GREEN;
+				TextView txt = findViewById(R.id.log);
+				int color = error ? Color.RED : Color.GREEN;
 				txt.setText(errorMsg);
 				txt.setBackgroundColor(color);
 			}
