@@ -7,6 +7,8 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,26 +30,76 @@ public class ScannerActivity extends AppCompatActivity {
 
 
 	SurfaceView surfaceView;
-	TextView txtBarcodeValue;
 	private BarcodeDetector barcodeDetector;
 	private CameraSource cameraSource;
 	private static final int REQUEST_CAMERA_PERMISSION = 201;
-	Button btnAction;
-	String intentData = "";
-	boolean isEmail = false;
 	private ScanOptions opt;
+	private EatOptions eopt;
 	private String last_barcode_value;
 	private Date last_barcode_scan;
+	Button lsat;
+	Button lsun;
+	Button dsat;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.activity_scanner);
 		initViews();
 		opt=ScanOptions.values()[getIntent().getExtras().getInt("ScanOption")];
+		showEatOptions(!opt.equals(ScanOptions.EAT));
+		if(opt.equals(ScanOptions.EAT)) {
+			setEatButtons();
+		}
 	}
 
+	private void setEatButtons() {
+		lsat.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				lsat.setBackgroundColor(Color.GREEN);
+				lsun.setBackgroundColor(Color.GRAY);
+				dsat.setBackgroundColor(Color.GRAY);
+				eopt=EatOptions.lunch_sat;
+			}
+		});
+		lsun.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				lsat.setBackgroundColor(Color.GRAY);
+				lsun.setBackgroundColor(Color.GREEN);
+				dsat.setBackgroundColor(Color.GRAY);
+				eopt=EatOptions.lunch_sun;
+			}
+		});
+		dsat.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				lsat.setBackgroundColor(Color.GRAY);
+				lsun.setBackgroundColor(Color.GRAY);
+				dsat.setBackgroundColor(Color.GREEN);
+				eopt=EatOptions.dinner_sat;
+			}
+		});
+	}
+
+	private void showEatOptions(boolean hide){
+		int vis=hide? View.INVISIBLE:View.VISIBLE;
+		lsat.setVisibility(vis);
+		lsat.setEnabled(!hide);
+		lsat.setBackgroundColor(Color.GRAY);
+		lsun.setVisibility(vis);
+		lsun.setEnabled(!hide);
+		lsun.setBackgroundColor(Color.GRAY);
+		dsat.setVisibility(vis);
+		dsat.setEnabled(!hide);
+		dsat.setBackgroundColor(Color.GRAY);
+	}
 	private void initViews() {
 		surfaceView = findViewById(R.id.surfaceView);
+		lsat=findViewById(R.id.lunch_sat);
+		lsun=findViewById(R.id.lunch_sun);
+		dsat=findViewById(R.id.dinner_sat);
 	}
 
 	private void initialiseDetectorsAndSources() {
@@ -108,22 +160,32 @@ public class ScannerActivity extends AppCompatActivity {
 		//TODO ACCESS
 		if (!barcode.displayValue.equals(last_barcode_value) ||
 				(last_barcode_scan != null && last_barcode_scan.getTime() - System.currentTimeMillis() > 2000 )) {
-			Log.d("TEST QR", barcode.displayValue);
+			//Log.d("TEST QR", barcode.displayValue);
 			if (opt == ScanOptions.REGISTER)
 				FirestoreConnector.registerUser(barcode.displayValue, this);
 			else if (opt == ScanOptions.EAT) {
-				EatOptions eatType = (EatOptions) getIntent().getSerializableExtra("eatType");
-				FirestoreConnector.eatUser(barcode.displayValue, eatType, this);
+				if(eopt!=null)
+				//EatOptions eatType = (EatOptions) getIntent().getSerializableExtra("eatType");
+					FirestoreConnector.eatUser(barcode.displayValue, eopt, this);
+			}
+			else if (opt == ScanOptions.ACCESS){
+				FirestoreConnector.accessUser(barcode.displayValue, this);
 			}
 			last_barcode_value = barcode.displayValue;
 		}
 	}
 
 	public void log(boolean error,String errorMsg){
-		TextView txt=findViewById(R.id.log);
-		int color=error?Color.RED:Color.GREEN;
-		txt.setText(errorMsg);
-		txt.setBackgroundColor(color);
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				TextView txt=findViewById(R.id.log);
+				int color=error?Color.RED:Color.GREEN;
+				txt.setText(errorMsg);
+				txt.setBackgroundColor(color);
+			}
+		});
+
 	}
 
 	@Override

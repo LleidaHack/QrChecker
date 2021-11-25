@@ -35,7 +35,7 @@ public abstract class FirestoreConnector {
 
 	private static String env="dev";
 	private static String year="2021";
-
+	private static String guest="HackEPS_Guest_.";
 
 	private static void initFirebase() {
 		if(db == null)
@@ -57,7 +57,21 @@ public abstract class FirestoreConnector {
 					.document("eats").collection("lunch_sun");
 
 	}
-
+	public static boolean isGuest(String uid){
+		return uid.matches(guest);
+	}
+	public static void addGuest(String uid){
+		Map<String, Object> docData = new HashMap<>();
+		docData.put("registered", true);
+		db.collection("data").document(uid)
+				.set(docData)
+				.addOnFailureListener(new OnFailureListener() {
+					@Override
+					public void onFailure(@NonNull Exception e) {
+						Log.w("TAG", "Error writing document", e);
+					}
+				});
+	}
 	public static void registerUser(String uid, ScannerActivity c){
 		initFirebase();
 		db.runTransaction(new Transaction.Function<Void>() {
@@ -65,19 +79,25 @@ public abstract class FirestoreConnector {
 			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
 				DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
 				Map<String, Object> data = new HashMap<>();
-				data.put("lastAccessTime", dtf.format(LocalDateTime.now()));
-
-				//DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
-				if(snapshot.exists()){
-					// TODO Faltaria revisar que el usuario no este ya registrado
-
+				data.put("time_in", dtf.format(LocalDateTime.now()));
+				if(isGuest(uid)){
+					addGuest(uid);
 					transaction.set(logCollection.document(uid),data, SetOptions.merge());
-					//transaction.update(userCollection.document(uid),"registered",true);
+					c.log(false,"Guest User registered");
+				}
+				else if(snapshot.exists() && (!snapshot.contains("registered") || !snapshot.get("registered",boolean.class))){
+					transaction.set(logCollection.document(uid),data, SetOptions.merge());
+					transaction.update(userCollection.document(uid),"registered",true);
 					c.log(false,"User registered");
 				}
-				else c.log(true,"User not existent");
+				else c.log(true,"User not existent or already registered");
 				// Success
 				return null;
+			}
+		}).addOnFailureListener(new OnFailureListener() {
+			@Override
+			public void onFailure(@NonNull Exception e) {
+				c.log(false,"Unexpected error occurred.");
 			}
 		});
 
@@ -151,45 +171,44 @@ public abstract class FirestoreConnector {
 			}
 		});
 	}
-	public static void accessUser(String uid){
+	public static void accessUser(String uid, ScannerActivity c){
 		//TODO finish this function
 		LocalDateTime now = LocalDateTime.now();
 		Map<String, Object> data = new HashMap<>();
+		data.put("time_in", dtf.format(now));
 		logCollection.document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
 			@Override
 			public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 				if (task.isSuccessful()) {
 					DocumentSnapshot document = task.getResult();
 					if (document.exists()) {
-						//Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-						//getC
+						logCollection.document(uid)
+								.set(data)
+								.addOnSuccessListener(new OnSuccessListener<Void>() {
+									@Override
+									public void onSuccess(Void aVoid) {
+										c.log(false,"User access correctly.");
+									}
+								})
+								.addOnFailureListener(new OnFailureListener() {
+									@Override
+									public void onFailure(@NonNull Exception e) {
+										c.log(false,"Error occurred");
+									}
+								});
 					} else {
-
+						c.log(true, "User is not registered");
 					}
 				} else {
-					//Log.d(TAG, "get failed with ", task.getException());
+					c.log(false,"Error occurred");
 				}
 			}
 		});
-		//Query query = userCollection.whereEqualTo("uid", "0gIqnwC6BRhREctO0Mm1kmcRpAh1");
-		data.put("time_in", dtf.format(now));
-		logCollection.document(uid)
-				.set(data)
-				.addOnSuccessListener(new OnSuccessListener<Void>() {
-					@Override
-					public void onSuccess(Void aVoid) {
-						Log.d("s", "DocumentSnapshot successfully written!");
-					}
-				})
-				.addOnFailureListener(new OnFailureListener() {
-					@Override
-					public void onFailure(@NonNull Exception e) {
-						Log.w("s", "Error writing document", e);
-					}
-				});
-
 	}
+
+
 	public static void eatUser(String uid,EatOptions eat,ScannerActivity c){
+		//TODO: afegir usuaris guest "HackEPS_Guest_* "
 		initFirebase();
 		db.runTransaction(new Transaction.Function<Void>() {
 			@Override
