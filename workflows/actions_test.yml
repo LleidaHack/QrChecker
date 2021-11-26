@@ -1,0 +1,2 @@
+- name: Generate version
+  uses: HardNorth/github-version-generate@v1.1.1
