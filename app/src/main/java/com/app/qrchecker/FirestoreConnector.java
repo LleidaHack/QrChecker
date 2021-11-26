@@ -225,7 +225,6 @@ public abstract class FirestoreConnector {
 				else if (eat == EatOptions.lunch_sun)
 					collection = sunLunchCollection;
 
-				//List<String> lst= (List<String>) snapshotEat.get("users");
 				DocumentSnapshot snapshot = transaction.get(logCollection.document(uid));
 
 				if (snapshot.exists()) {
@@ -237,7 +236,6 @@ public abstract class FirestoreConnector {
 					} else {
 						Map<String, Object> data = new HashMap<>();
 						data.put("eatTime", dtf.format(LocalDateTime.now()));
-						//EAT
 						transaction.set(collection.document(uid), data, SetOptions.merge());
 						c.log(false, "User action registered");
 					}
@@ -250,12 +248,11 @@ public abstract class FirestoreConnector {
 			public void onSuccess(Void aVoid) {
 				//throw new RuntimeException("");
 			}
-		})
-				.addOnFailureListener(new OnFailureListener() {
-					@Override
-					public void onFailure(@NonNull Exception e) {
-						//Log.w(TAG, "Transaction failure.", e);
-					}
-				});
+		}).addOnFailureListener(new OnFailureListener() {
+			@Override
+			public void onFailure(@NonNull Exception e) {
+				//Log.w(TAG, "Transaction failure.", e);
+			}
+		});
 	}
 }

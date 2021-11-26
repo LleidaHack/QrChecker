@@ -44,7 +44,7 @@
         android:layout_marginTop="100dp"
         android:layout_marginBottom="30dp"
         android:layout_toRightOf="@id/dinner_sat"
-        android:text="lunch_sat"></Button>
+        android:text="lunch_sun"></Button>
 
     <SurfaceView
         android:id="@+id/surfaceView"
