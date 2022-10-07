@@ -1,5 +1,6 @@
 package com.app.qrchecker;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,6 +10,7 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Vibrator;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -78,29 +80,42 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+	private void vibrate(){
+		Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+		// Vibrate for 400 milliseconds
+		v.vibrate(200);
+	}
 	public void setUsers(int size) {
 		TextView access = findViewById(R.id.users);
 		access.setText("users -> " + size);
+		vibrate();
 	}
 
 	public void setRegUsers(int size) {
 		TextView access = findViewById(R.id.regUsers);
 		access.setText("registered users -> " + size);
+		vibrate();
 	}
-
+	public void setFriDinner(int size) {
+		TextView access = findViewById(R.id.soparDivendres);
+		access.setText("Usuaris sopats (divendres) -> " + size);
+		vibrate();
+	}
 	public void setSatLunch(int size) {
 		TextView access = findViewById(R.id.esmorzarUsers);
 		access.setText("Usuaris dinats (Dissabte) -> " + size);
+		vibrate();
 	}
 
 	public void setSatDin(int size) {
 		TextView access = findViewById(R.id.dinarUsers);
-		access.setText("Usuaris sopats -> " + size);
+		access.setText("Usuaris sopats (Dissabte) -> " + size);
+		vibrate();
 	}
 
 	public void setSunLunch(int size) {
 		TextView access = findViewById(R.id.soparUsers);
 		access.setText("Usuaris dinats (Diumenge) -> " + size);
+		vibrate();
 	}
 }
