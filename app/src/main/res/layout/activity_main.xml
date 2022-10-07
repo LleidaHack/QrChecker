@@ -74,10 +74,19 @@
         android:text="registered users -> "></TextView>
 
     <TextView
-        android:id="@+id/esmorzarUsers"
+        android:id="@+id/soparDivendres"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/regUsers"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@id/refresh"
+        android:text="users(dinar) -> "></TextView>
+
+    <TextView
+        android:id="@+id/esmorzarUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/soparDivendres"
         android:layout_marginLeft="20dp"
         android:layout_toRightOf="@id/refresh"
         android:text="users(esmorzar) -> "></TextView>
@@ -90,6 +99,7 @@
         android:layout_marginLeft="20dp"
         android:layout_toRightOf="@id/refresh"
         android:text="users(dinar) -> "></TextView>
+
 
     <TextView
         android:id="@+id/soparUsers"

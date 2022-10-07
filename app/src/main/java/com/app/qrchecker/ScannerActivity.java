@@ -1,9 +1,11 @@
 package com.app.qrchecker;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
@@ -38,6 +40,7 @@ public class ScannerActivity extends AppCompatActivity {
 	private EatOptions eopt;
 	private String last_barcode_value;
 	private Date last_barcode_scan;
+	Button dfri;
 	Button lsat;
 	Button lsun;
 	Button dsat;
@@ -56,37 +59,57 @@ public class ScannerActivity extends AppCompatActivity {
 	}
 
 	private void setEatButtons() {
+		dfri.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dfri.setBackgroundColor(Color.GREEN);
+				lsat.setBackgroundColor(R.color.btn_color);
+				lsun.setBackgroundColor(R.color.btn_color);
+				dsat.setBackgroundColor(R.color.btn_color);
+				eopt = EatOptions.dinner_fri;
+				last_barcode_value=null;
+			}
+		});
 		lsat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				dfri.setBackgroundColor(R.color.btn_color);
 				lsat.setBackgroundColor(Color.GREEN);
 				lsun.setBackgroundColor(R.color.btn_color);
 				dsat.setBackgroundColor(R.color.btn_color);
 				eopt = EatOptions.lunch_sat;
+				last_barcode_value=null;
 			}
 		});
 		lsun.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				dfri.setBackgroundColor(R.color.btn_color);
 				lsat.setBackgroundColor(R.color.btn_color);
 				lsun.setBackgroundColor(Color.GREEN);
 				dsat.setBackgroundColor(R.color.btn_color);
 				eopt = EatOptions.lunch_sun;
+				last_barcode_value=null;
 			}
 		});
 		dsat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				dfri.setBackgroundColor(R.color.btn_color);
 				lsat.setBackgroundColor(R.color.btn_color);
 				lsun.setBackgroundColor(R.color.btn_color);
 				dsat.setBackgroundColor(Color.GREEN);
 				eopt = EatOptions.dinner_sat;
+				last_barcode_value=null;
 			}
 		});
 	}
 
 	private void showEatOptions(boolean hide) {
 		int vis = hide ? View.INVISIBLE : View.VISIBLE;
+		dfri.setVisibility(vis);
+		dfri.setEnabled(!hide);
+		dfri.setBackgroundColor(R.color.btn_color);
 		lsat.setVisibility(vis);
 		lsat.setEnabled(!hide);
 		lsat.setBackgroundColor(R.color.btn_color);
@@ -100,9 +123,16 @@ public class ScannerActivity extends AppCompatActivity {
 
 	private void initViews() {
 		surfaceView = findViewById(R.id.surfaceView);
+		dfri = findViewById(R.id.dinner_fri);
 		lsat = findViewById(R.id.lunch_sat);
 		lsun = findViewById(R.id.lunch_sun);
 		dsat = findViewById(R.id.dinner_sat);
+	}
+
+	private void vibrate(){
+		Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+		// Vibrate for 400 milliseconds
+		v.vibrate(400);
 	}
 
 	private void initialiseDetectorsAndSources() {
@@ -161,8 +191,8 @@ public class ScannerActivity extends AppCompatActivity {
 
 	private void executeOperation(Barcode barcode) {
 		//TODO ACCESS
-		if (!barcode.displayValue.equals(last_barcode_value) ||
-				(last_barcode_scan != null && last_barcode_scan.getTime() - System.currentTimeMillis() > 2000)) {
+		if (!barcode.displayValue.equals(last_barcode_value) /*||
+				(last_barcode_scan != null && last_barcode_scan.getTime() - System.currentTimeMillis() > 2000)*/) {
 			//Log.d("TEST QR", barcode.displayValue);
 			if (opt == ScanOptions.REGISTER)
 				FirestoreConnector.registerUser(barcode.displayValue, this);
@@ -187,7 +217,7 @@ public class ScannerActivity extends AppCompatActivity {
 				txt.setBackgroundColor(color);
 			}
 		});
-
+		vibrate();
 	}
 
 	@Override
