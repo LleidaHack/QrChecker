@@ -29,12 +29,11 @@ public abstract class FirestoreConnector {
 
 	private static CollectionReference userCollection;
 	private static CollectionReference logCollection;
-	private static CollectionReference friDinnerCollection;
 	private static CollectionReference satLunchCollection;
 	private static CollectionReference satDinnerCollection;
 	private static CollectionReference sunLunchCollection;
 
-	private static String env = "dev";
+	private static String env = "prod";
 	private static String year = "2022";
 	private static String database = "hackeps-" + year;
 	private static String guest = "HackEPS_Guest_.";
@@ -46,9 +45,6 @@ public abstract class FirestoreConnector {
 			userCollection = db.collection(database).document(env).collection("users");
 		if (logCollection == null)
 			logCollection = db.collection(database).document(env).collection("log");
-		if (friDinnerCollection == null)
-			friDinnerCollection = db.collection(database).document(env).collection("events")
-					.document("eats").collection("dinner_fri");
 		if (satLunchCollection == null)
 			satLunchCollection = db.collection(database).document(env).collection("events")
 					.document("eats").collection("lunch_sat");
@@ -116,7 +112,6 @@ public abstract class FirestoreConnector {
 			public Void apply(Transaction transaction) {
 				Task<QuerySnapshot> usr = userCollection.get();
 				Task<QuerySnapshot> log = logCollection.get();
-				Task<QuerySnapshot> friDinner = friDinnerCollection.get();
 				Task<QuerySnapshot> satLunch = satLunchCollection.get();
 				Task<QuerySnapshot> satDin = satDinnerCollection.get();
 				Task<QuerySnapshot> sunLunch = sunLunchCollection.get();
@@ -137,17 +132,6 @@ public abstract class FirestoreConnector {
 						if (task.isSuccessful()) {
 							List<DocumentSnapshot> out = task.getResult().getDocuments();
 							c.setRegUsers(out.size());
-						} else {
-							//Log.d(TAG, "Error getting documents: ", task.getException());
-						}
-					}
-				});
-				friDinner.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-					@Override
-					public void onComplete(@NonNull Task<QuerySnapshot> task) {
-						if (task.isSuccessful()) {
-							List<DocumentSnapshot> out = task.getResult().getDocuments();
-							c.setFriDinner(out.size());
 						} else {
 							//Log.d(TAG, "Error getting documents: ", task.getException());
 						}
@@ -235,9 +219,7 @@ public abstract class FirestoreConnector {
 			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
 
 				CollectionReference collection = null;
-				if (eat == EatOptions.dinner_fri)
-					collection = friDinnerCollection;
-				else if (eat == EatOptions.lunch_sat)
+				if (eat == EatOptions.lunch_sat)
 					collection = satLunchCollection;
 				else if (eat == EatOptions.dinner_sat)
 					collection = satDinnerCollection;

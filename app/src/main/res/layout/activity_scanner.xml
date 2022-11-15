@@ -5,16 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/activity_horizontal_margin">
-
-    <Button
-        android:id="@+id/dinner_fri"
-        android:layout_margin="3dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/surfaceView"
-        android:layout_marginTop="100dp"
-        android:layout_marginBottom="30dp"
-        android:text="dinner_fri"></Button>
     <Button
         android:id="@+id/lunch_sat"
         android:layout_margin="3dp"
@@ -23,7 +13,6 @@
         android:layout_above="@id/surfaceView"
         android:layout_marginTop="100dp"
         android:layout_marginBottom="30dp"
-        android:layout_toRightOf="@id/dinner_fri"
         android:text="lunch_sat"></Button>
 
     <Button
