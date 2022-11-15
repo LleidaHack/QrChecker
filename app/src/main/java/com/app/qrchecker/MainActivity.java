@@ -96,25 +96,20 @@ public class MainActivity extends AppCompatActivity {
 		access.setText("registered users -> " + size);
 		vibrate();
 	}
-	public void setFriDinner(int size) {
-		TextView access = findViewById(R.id.soparDivendres);
-		access.setText("Usuaris sopats (divendres) -> " + size);
-		vibrate();
-	}
 	public void setSatLunch(int size) {
-		TextView access = findViewById(R.id.esmorzarUsers);
+		TextView access = findViewById(R.id.dinarDissabte);
 		access.setText("Usuaris dinats (Dissabte) -> " + size);
 		vibrate();
 	}
 
 	public void setSatDin(int size) {
-		TextView access = findViewById(R.id.dinarUsers);
+		TextView access = findViewById(R.id.soparDissabte);
 		access.setText("Usuaris sopats (Dissabte) -> " + size);
 		vibrate();
 	}
 
 	public void setSunLunch(int size) {
-		TextView access = findViewById(R.id.soparUsers);
+		TextView access = findViewById(R.id.dinarDiumenge);
 		access.setText("Usuaris dinats (Diumenge) -> " + size);
 		vibrate();
 	}

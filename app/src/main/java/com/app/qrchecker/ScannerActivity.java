@@ -40,7 +40,6 @@ public class ScannerActivity extends AppCompatActivity {
 	private EatOptions eopt;
 	private String last_barcode_value;
 	private Date last_barcode_scan;
-	Button dfri;
 	Button lsat;
 	Button lsun;
 	Button dsat;
@@ -59,21 +58,9 @@ public class ScannerActivity extends AppCompatActivity {
 	}
 
 	private void setEatButtons() {
-		dfri.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dfri.setBackgroundColor(Color.GREEN);
-				lsat.setBackgroundColor(R.color.btn_color);
-				lsun.setBackgroundColor(R.color.btn_color);
-				dsat.setBackgroundColor(R.color.btn_color);
-				eopt = EatOptions.dinner_fri;
-				last_barcode_value=null;
-			}
-		});
 		lsat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dfri.setBackgroundColor(R.color.btn_color);
 				lsat.setBackgroundColor(Color.GREEN);
 				lsun.setBackgroundColor(R.color.btn_color);
 				dsat.setBackgroundColor(R.color.btn_color);
@@ -84,7 +71,6 @@ public class ScannerActivity extends AppCompatActivity {
 		lsun.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dfri.setBackgroundColor(R.color.btn_color);
 				lsat.setBackgroundColor(R.color.btn_color);
 				lsun.setBackgroundColor(Color.GREEN);
 				dsat.setBackgroundColor(R.color.btn_color);
@@ -95,7 +81,6 @@ public class ScannerActivity extends AppCompatActivity {
 		dsat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dfri.setBackgroundColor(R.color.btn_color);
 				lsat.setBackgroundColor(R.color.btn_color);
 				lsun.setBackgroundColor(R.color.btn_color);
 				dsat.setBackgroundColor(Color.GREEN);
@@ -107,9 +92,6 @@ public class ScannerActivity extends AppCompatActivity {
 
 	private void showEatOptions(boolean hide) {
 		int vis = hide ? View.INVISIBLE : View.VISIBLE;
-		dfri.setVisibility(vis);
-		dfri.setEnabled(!hide);
-		dfri.setBackgroundColor(R.color.btn_color);
 		lsat.setVisibility(vis);
 		lsat.setEnabled(!hide);
 		lsat.setBackgroundColor(R.color.btn_color);
@@ -123,7 +105,6 @@ public class ScannerActivity extends AppCompatActivity {
 
 	private void initViews() {
 		surfaceView = findViewById(R.id.surfaceView);
-		dfri = findViewById(R.id.dinner_fri);
 		lsat = findViewById(R.id.lunch_sat);
 		lsun = findViewById(R.id.lunch_sun);
 		dsat = findViewById(R.id.dinner_sat);

@@ -23,7 +23,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/marginTop"
         android:backgroundTint="@color/btn_color"
-        android:text="Acces"></Button>
+        android:text="Acces"
+        android:clickable="false"></Button>
 
     <Button
         android:id="@+id/registre"
@@ -74,41 +75,32 @@
         android:text="registered users -> "></TextView>
 
     <TextView
-        android:id="@+id/soparDivendres"
+        android:id="@+id/dinarDissabte"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/regUsers"
         android:layout_marginLeft="20dp"
         android:layout_toRightOf="@id/refresh"
-        android:text="users(dinar) -> "></TextView>
+        android:text="users(dinarDissabte) -> "></TextView>
 
     <TextView
-        android:id="@+id/esmorzarUsers"
+        android:id="@+id/soparDissabte"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/soparDivendres"
+        android:layout_below="@id/dinarDissabte"
         android:layout_marginLeft="20dp"
         android:layout_toRightOf="@id/refresh"
-        android:text="users(esmorzar) -> "></TextView>
-
-    <TextView
-        android:id="@+id/dinarUsers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/esmorzarUsers"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@id/refresh"
-        android:text="users(dinar) -> "></TextView>
+        android:text="users(soparDissabte) -> "></TextView>
 
 
     <TextView
-        android:id="@+id/soparUsers"
+        android:id="@+id/dinarDiumenge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/dinarUsers"
+        android:layout_below="@id/soparDissabte"
         android:layout_marginLeft="20dp"
         android:layout_toRightOf="@id/refresh"
-        android:text="users(dinar) -> "></TextView>
+        android:text="users(dinarDiumenge) -> "></TextView>
 
     <ImageView
         android:layout_width="match_parent"
