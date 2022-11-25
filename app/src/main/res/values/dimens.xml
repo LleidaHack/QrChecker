@@ -1,5 +1,6 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="activity_horizontal_margin">10dp</dimen>
-    <dimen name="marginTop">30dp</dimen>
+    <dimen name="marginTop">70dp</dimen>
+    <dimen name="small_text">30sp</dimen>
 </resources>

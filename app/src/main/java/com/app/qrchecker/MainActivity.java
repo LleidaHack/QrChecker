@@ -34,16 +34,10 @@ public class MainActivity extends AppCompatActivity {
 
 	private void setButtons() {
 		MainActivity m = this;
-		Button access = findViewById(R.id.acces);
 		Button register = findViewById(R.id.registre);
 		Button menjar = findViewById(R.id.menjar);
 		ImageView refresh = findViewById(R.id.refresh);
-		access.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				gotoScan(ScanOptions.ACCESS);
-			}
-		});
+
 		register.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -87,13 +81,13 @@ public class MainActivity extends AppCompatActivity {
 	}
 	public void setUsers(int size) {
 		TextView access = findViewById(R.id.users);
-		access.setText("users -> " + size);
+		access.setText("Inscrits -> " + size);
 		vibrate();
 	}
 
 	public void setRegUsers(int size) {
 		TextView access = findViewById(R.id.regUsers);
-		access.setText("registered users -> " + size);
+		access.setText("Registrats -> " + size);
 		vibrate();
 	}
 	public void setSatLunch(int size) {

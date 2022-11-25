@@ -9,104 +9,116 @@
     tools:context=".MainActivity">
 
     <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/back"></ImageView>
+
+    <ImageView
         android:id="@+id/logo"
+        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_alignParentTop="true"
         android:src="@drawable/logo_gris"></ImageView>
 
     <Button
-        android:id="@+id/acces"
+        android:id="@+id/registre"
         android:layout_width="200dp"
-        android:layout_height="50dp"
+        android:layout_height="70dp"
         android:layout_below="@id/logo"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/marginTop"
-        android:backgroundTint="@color/btn_color"
-        android:text="Acces"
-        android:clickable="false"></Button>
-
-    <Button
-        android:id="@+id/registre"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/acces"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/marginTop"
-        android:backgroundTint="@color/btn_color"
+        android:backgroundTint="@color/white"
+        android:textAllCaps="false"
+        android:textSize="@dimen/small_text"
         android:text="Registre"></Button>
 
     <Button
         android:id="@+id/menjar"
         android:layout_width="200dp"
-        android:layout_height="50dp"
+        android:layout_height="70dp"
         android:layout_below="@id/registre"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/marginTop"
-        android:backgroundTint="@color/btn_color"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="@color/white"
+        android:textAllCaps="false"
+        android:textSize="@dimen/small_text"
         android:text="Menjar"></Button>
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_marginRight="50dp"
+        android:layout_height="4dp"
+        android:layout_below="@id/menjar"
+        android:layout_centerHorizontal="true"
+        android:background="@color/white"
+        android:layout_marginTop="100dp"/>
 
     <ImageView
         android:id="@+id/refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/menjar"
-        android:layout_marginLeft="120dp"
-        android:layout_marginTop="65dp"
+        android:layout_below="@id/line"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        app:tint="@color/white"
         android:src="@drawable/refresh"></ImageView>
 
     <TextView
         android:id="@+id/users"
+        android:textColor="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/menjar"
-        android:layout_marginLeft="20dp"
+        android:layout_below="@id/line"
         android:layout_marginTop="@dimen/marginTop"
-        android:layout_toRightOf="@id/refresh"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/small_text"
         android:text="users -> "></TextView>
 
     <TextView
         android:id="@+id/regUsers"
+        android:textColor="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/users"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@id/refresh"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/small_text"
         android:text="registered users -> "></TextView>
 
     <TextView
         android:id="@+id/dinarDissabte"
+        android:textColor="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/regUsers"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@id/refresh"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/small_text"
         android:text="users(dinarDissabte) -> "></TextView>
 
     <TextView
         android:id="@+id/soparDissabte"
+        android:textColor="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/dinarDissabte"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@id/refresh"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/small_text"
         android:text="users(soparDissabte) -> "></TextView>
 
 
     <TextView
         android:id="@+id/dinarDiumenge"
+        android:textColor="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/soparDissabte"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@id/refresh"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/small_text"
         android:text="users(dinarDiumenge) -> "></TextView>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="-35dp"
-        android:src="@drawable/skyline"></ImageView>
 
 </RelativeLayout>

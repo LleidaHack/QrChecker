@@ -25,7 +25,7 @@ import java.util.Map;
 public abstract class FirestoreConnector {
 	//TODO Some code style improvements
 	private static FirebaseFirestore db;
-	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/YYYY-HH:mm:ss");
+	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/YYYY-HH:mm:ss");
 
 	private static CollectionReference userCollection;
 	private static CollectionReference logCollection;
@@ -33,10 +33,10 @@ public abstract class FirestoreConnector {
 	private static CollectionReference satDinnerCollection;
 	private static CollectionReference sunLunchCollection;
 
-	private static String env = "prod";
-	private static String year = "2022";
-	private static String database = "hackeps-" + year;
-	private static String guest = "HackEPS_Guest_.";
+	private static final String env = "prod";
+	private static final String year = "2022";
+	private static final String database = "hackeps-" + year;
+	private static final String guest = "HackEPS_Guest_[0-9]*";
 
 	private static void initFirebase() {
 		if (db == null)
@@ -62,6 +62,10 @@ public abstract class FirestoreConnector {
 	public static boolean isGuest(String uid) {
 		return uid.matches(guest);
 	}
+	private static String getGuestName(String uid){
+		String[] n=uid.split("_");
+		return n[n.length-1];
+	}
 
 	public static void addGuest(String uid, ScannerActivity c) {
 		Map<String, Object> docData = new HashMap<>();
@@ -71,7 +75,7 @@ public abstract class FirestoreConnector {
 				.addOnFailureListener(new OnFailureListener() {
 					@Override
 					public void onFailure(@NonNull Exception e) {
-						c.log(true, "Error writing to document as guest");
+						c.log(true, "Error writing to document as guest", "");
 					}
 				});
 	}
@@ -83,25 +87,24 @@ public abstract class FirestoreConnector {
 			public Void apply(Transaction transaction) throws FirebaseFirestoreException {
 				DocumentSnapshot snapshot = transaction.get(userCollection.document(uid));
 				Map<String, Object> data = new HashMap<>();
+				Map<String, Object> dataUser = new HashMap<>();
 				data.put("time_in", dtf.format(LocalDateTime.now()));
-				if (isGuest(uid)) {
-					addGuest(uid, c);
+				dataUser.put("food", "Guest User");
+				dataUser.put("registered",true);
+				if (isGuest(uid) && !snapshot.exists()) {
+					transaction.set(userCollection.document(uid), dataUser, SetOptions.merge());
 					transaction.set(logCollection.document(uid), data, SetOptions.merge());
-					c.log(false, "Guest User registered");
-				} else if (snapshot.exists() && (!snapshot.contains("registered") || !snapshot.get("registered", boolean.class))) {
+					c.log(false, "QR Acceptat","Usuari anonim afegit correctament");
+				} else if (snapshot.exists() && (!snapshot.contains("registered")
+						|| !snapshot.get("registered", boolean.class))) {
 					transaction.set(logCollection.document(uid), data, SetOptions.merge());
 					transaction.update(userCollection.document(uid), "registered", true);
-					c.log(false, "User registered");
-				} else c.log(true, "User not existent or already registered");
+					c.log(false, "QR Acceptat", "Usuari registrat correctament");
+				} else c.log(true, "QR Denegat","User no existent o ja registrat");
 				// Success
 				return null;
 			}
-		}).addOnFailureListener(new OnFailureListener() {
-			@Override
-			public void onFailure(@NonNull Exception e) {
-				c.log(true, "Unexpected error occurred.");
-			}
-		});
+		}).addOnFailureListener(e -> c.log(true, "Unexpected error occurred.", ""));
 
 	}
 
@@ -175,40 +178,40 @@ public abstract class FirestoreConnector {
 		});
 	}
 
-	public static void accessUser(String uid, ScannerActivity c) {
-		//TODO finish this function
-		LocalDateTime now = LocalDateTime.now();
-		Map<String, Object> data = new HashMap<>();
-		data.put("time_in", dtf.format(now));
-		logCollection.document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-			@Override
-			public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-				if (task.isSuccessful()) {
-					DocumentSnapshot document = task.getResult();
-					if (document.exists()) {
-						logCollection.document(uid)
-								.set(data)
-								.addOnSuccessListener(new OnSuccessListener<Void>() {
-									@Override
-									public void onSuccess(Void aVoid) {
-										c.log(false, "User access correctly.");
-									}
-								})
-								.addOnFailureListener(new OnFailureListener() {
-									@Override
-									public void onFailure(@NonNull Exception e) {
-										c.log(false, "Error occurred");
-									}
-								});
-					} else {
-						c.log(true, "User is not registered");
-					}
-				} else {
-					c.log(true, "Error occurred");
-				}
-			}
-		});
-	}
+//	public static void accessUser(String uid, ScannerActivity c) {
+//		//TODO unused for now
+//		LocalDateTime now = LocalDateTime.now();
+//		Map<String, Object> data = new HashMap<>();
+//		data.put("time_in", dtf.format(now));
+//		logCollection.document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//			@Override
+//			public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//				if (task.isSuccessful()) {
+//					DocumentSnapshot document = task.getResult();
+//					if (document.exists()) {
+//						logCollection.document(uid)
+//								.set(data)
+//								.addOnSuccessListener(new OnSuccessListener<Void>() {
+//									@Override
+//									public void onSuccess(Void aVoid) {
+//										c.log(false, "User access correctly.", "");
+//									}
+//								})
+//								.addOnFailureListener(new OnFailureListener() {
+//									@Override
+//									public void onFailure(@NonNull Exception e) {
+//										c.log(false, "Error occurred", "");
+//									}
+//								});
+//					} else {
+//						c.log(true, "User is not registered", "");
+//					}
+//				} else {
+//					c.log(true, "Error occurred", "");
+//				}
+//			}
+//		});
+//	}
 
 
 	public static void eatUser(String uid, EatOptions eat, ScannerActivity c) {
@@ -226,34 +229,29 @@ public abstract class FirestoreConnector {
 				else if (eat == EatOptions.lunch_sun)
 					collection = sunLunchCollection;
 
-				DocumentSnapshot snapshot = transaction.get(logCollection.document(uid));
+				DocumentSnapshot userSnapshot = transaction.get(userCollection.document(uid));
 
-				if (snapshot.exists()) {
+				if (userSnapshot.exists()
+						&& userSnapshot.contains("registered")
+						&& userSnapshot.get("registered",boolean.class)) {
 					DocumentSnapshot snapshotEat = transaction.get(collection.document(uid));
 
 					if (snapshotEat.exists()) {
 						// El usuario ya ha comido
-						c.log(true, "User action already registered");
+						c.log(true, "QR Denegat", "L'usuari ja ha consumit aquest apat");
 					} else {
 						Map<String, Object> data = new HashMap<>();
 						data.put("eatTime", dtf.format(LocalDateTime.now()));
 						transaction.set(collection.document(uid), data, SetOptions.merge());
-						c.log(false, "User action registered");
+						c.log(false, "QR Acceptat", "Restricció Alimentaria:\n"+userSnapshot.get("food", String.class));
 					}
-				} else c.log(true, "User not registered");
-				// Success
+				} else c.log(true, "QR Denegat", "Usuari no registrat o inexistent");
 				return null;
 			}
-		}).addOnSuccessListener(new OnSuccessListener<Void>() {
-			@Override
-			public void onSuccess(Void aVoid) {
-				//throw new RuntimeException("");
-			}
-		}).addOnFailureListener(new OnFailureListener() {
-			@Override
-			public void onFailure(@NonNull Exception e) {
-				//Log.w(TAG, "Transaction failure.", e);
-			}
+		}).addOnSuccessListener(aVoid -> {
+			//throw new RuntimeException("");
+		}).addOnFailureListener(e -> {
+			//Log.w(TAG, "Transaction failure.", e);
 		});
 	}
 }

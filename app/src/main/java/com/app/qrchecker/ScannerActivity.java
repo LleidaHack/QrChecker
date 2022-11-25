@@ -2,9 +2,13 @@ package com.app.qrchecker;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
 import android.util.SparseArray;
@@ -18,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -43,6 +48,7 @@ public class ScannerActivity extends AppCompatActivity {
 	Button lsat;
 	Button lsun;
 	Button dsat;
+	VibrationEffect ve= VibrationEffect.createOneShot(400,10);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,7 @@ public class ScannerActivity extends AppCompatActivity {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.activity_scanner);
 		initViews();
+		last_barcode_value=null;
 		opt = ScanOptions.values()[getIntent().getExtras().getInt("ScanOption")];
 		showEatOptions(!opt.equals(ScanOptions.EAT));
 		if (opt.equals(ScanOptions.EAT)) {
@@ -61,9 +68,9 @@ public class ScannerActivity extends AppCompatActivity {
 		lsat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				lsat.setBackgroundColor(Color.GREEN);
-				lsun.setBackgroundColor(R.color.btn_color);
-				dsat.setBackgroundColor(R.color.btn_color);
+				lsat.setBackgroundResource(R.color.green);
+				lsun.setBackgroundResource(R.color.white);
+				dsat.setBackgroundResource(R.color.white);
 				eopt = EatOptions.lunch_sat;
 				last_barcode_value=null;
 			}
@@ -71,9 +78,9 @@ public class ScannerActivity extends AppCompatActivity {
 		lsun.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				lsat.setBackgroundColor(R.color.btn_color);
-				lsun.setBackgroundColor(Color.GREEN);
-				dsat.setBackgroundColor(R.color.btn_color);
+				lsat.setBackgroundResource(R.color.white);
+				lsun.setBackgroundResource(R.color.green);
+				dsat.setBackgroundResource(R.color.white);
 				eopt = EatOptions.lunch_sun;
 				last_barcode_value=null;
 			}
@@ -81,9 +88,9 @@ public class ScannerActivity extends AppCompatActivity {
 		dsat.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				lsat.setBackgroundColor(R.color.btn_color);
-				lsun.setBackgroundColor(R.color.btn_color);
-				dsat.setBackgroundColor(Color.GREEN);
+				lsat.setBackgroundResource(R.color.white);
+				lsun.setBackgroundResource(R.color.white);
+				dsat.setBackgroundResource(R.color.green);
 				eopt = EatOptions.dinner_sat;
 				last_barcode_value=null;
 			}
@@ -94,13 +101,15 @@ public class ScannerActivity extends AppCompatActivity {
 		int vis = hide ? View.INVISIBLE : View.VISIBLE;
 		lsat.setVisibility(vis);
 		lsat.setEnabled(!hide);
-		lsat.setBackgroundColor(R.color.btn_color);
+		lsat.setBackgroundResource(R.color.white);
+
 		lsun.setVisibility(vis);
 		lsun.setEnabled(!hide);
-		lsun.setBackgroundColor(R.color.btn_color);
+		lsun.setBackgroundResource(R.color.white);
+
 		dsat.setVisibility(vis);
 		dsat.setEnabled(!hide);
-		dsat.setBackgroundColor(R.color.btn_color);
+		dsat.setBackgroundResource(R.color.white);
 	}
 
 	private void initViews() {
@@ -113,7 +122,7 @@ public class ScannerActivity extends AppCompatActivity {
 	private void vibrate(){
 		Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		// Vibrate for 400 milliseconds
-		v.vibrate(400);
+		v.vibrate(ve);
 	}
 
 	private void initialiseDetectorsAndSources() {
@@ -157,7 +166,7 @@ public class ScannerActivity extends AppCompatActivity {
 		barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
 			@Override
 			public void release() {
-				Toast.makeText(getApplicationContext(), "To prevent memory leaks barcode scanner has been stopped", Toast.LENGTH_SHORT).show();
+//				Toast.makeText(getApplicationContext(), "To prevent memory leaks barcode scanner has been stopped", Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
@@ -171,33 +180,36 @@ public class ScannerActivity extends AppCompatActivity {
 	}
 
 	private void executeOperation(Barcode barcode) {
-		//TODO ACCESS
 		if (!barcode.displayValue.equals(last_barcode_value) /*||
-				(last_barcode_scan != null && last_barcode_scan.getTime() - System.currentTimeMillis() > 2000)*/) {
+//				(last_barcode_scan != null && last_barcode_scan.getTime() - System.currentTimeMillis() > 2000)*/) {
 			//Log.d("TEST QR", barcode.displayValue);
 			if (opt == ScanOptions.REGISTER)
 				FirestoreConnector.registerUser(barcode.displayValue, this);
 			else if (opt == ScanOptions.EAT) {
 				if (eopt != null)
-					//EatOptions eatType = (EatOptions) getIntent().getSerializableExtra("eatType");
 					FirestoreConnector.eatUser(barcode.displayValue, eopt, this);
 			} else if (opt == ScanOptions.ACCESS) {
-				FirestoreConnector.accessUser(barcode.displayValue, this);
+//				FirestoreConnector.accessUser(barcode.displayValue, this);
 			}
 			last_barcode_value = barcode.displayValue;
 		}
 	}
 
-	public void log(boolean error, String errorMsg) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				TextView txt = findViewById(R.id.log);
-				int color = error ? Color.RED : Color.GREEN;
-				txt.setText(errorMsg);
-				txt.setBackgroundColor(color);
-			}
-		});
+	public void log(boolean error, String errorMsg, String info) {
+//		runOnUiThread(new Runnable() {
+//			@Override
+//			public void run() {
+//
+////				TextView txt = findViewById(R.id.log);
+////				int color = error ? Color.RED : Color.GREEN;
+////				txt.setText(errorMsg);
+////				txt.setBackgroundColor(color);
+//			}
+//		});
+		startActivity(new Intent(ScannerActivity.this, InfoActivity.class)
+				.putExtra("title", errorMsg)
+				.putExtra("info", info)
+				.putExtra("error", error));
 		vibrate();
 	}
 
