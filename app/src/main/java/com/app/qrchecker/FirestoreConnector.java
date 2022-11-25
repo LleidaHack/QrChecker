@@ -25,7 +25,7 @@ import java.util.Map;
 public abstract class FirestoreConnector {
 	//TODO Some code style improvements
 	private static FirebaseFirestore db;
-	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/YYYY-HH:mm:ss");
+	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/YYYY-HH:mm:ss");
 
 	private static CollectionReference userCollection;
 	private static CollectionReference logCollection;
@@ -33,10 +33,10 @@ public abstract class FirestoreConnector {
 	private static CollectionReference satDinnerCollection;
 	private static CollectionReference sunLunchCollection;
 
-	private static String env = "prod";
-	private static String year = "2022";
-	private static String database = "hackeps-" + year;
-	private static String guest = "HackEPS_Guest_[0-9]*";
+	private static final String env = "prod";
+	private static final String year = "2022";
+	private static final String database = "hackeps-" + year;
+	private static final String guest = "HackEPS_Guest_[0-9]*";
 
 	private static void initFirebase() {
 		if (db == null)
@@ -92,11 +92,11 @@ public abstract class FirestoreConnector {
 				dataUser.put("food", "Guest User");
 				dataUser.put("registered",true);
 				if (isGuest(uid) && !snapshot.exists()) {
-//					addGuest(uid, c);
 					transaction.set(userCollection.document(uid), dataUser, SetOptions.merge());
 					transaction.set(logCollection.document(uid), data, SetOptions.merge());
 					c.log(false, "QR Acceptat","Usuari anonim afegit correctament");
-				} else if (snapshot.exists() && (!snapshot.contains("registered") || !snapshot.get("registered", boolean.class))) {
+				} else if (snapshot.exists() && (!snapshot.contains("registered")
+						|| !snapshot.get("registered", boolean.class))) {
 					transaction.set(logCollection.document(uid), data, SetOptions.merge());
 					transaction.update(userCollection.document(uid), "registered", true);
 					c.log(false, "QR Acceptat", "Usuari registrat correctament");
@@ -104,12 +104,7 @@ public abstract class FirestoreConnector {
 				// Success
 				return null;
 			}
-		}).addOnFailureListener(new OnFailureListener() {
-			@Override
-			public void onFailure(@NonNull Exception e) {
-				c.log(true, "Unexpected error occurred.", "");
-			}
-		});
+		}).addOnFailureListener(e -> c.log(true, "Unexpected error occurred.", ""));
 
 	}
 
@@ -253,16 +248,10 @@ public abstract class FirestoreConnector {
 				} else c.log(true, "QR Denegat", "Usuari no registrat o inexistent");
 				return null;
 			}
-		}).addOnSuccessListener(new OnSuccessListener<Void>() {
-			@Override
-			public void onSuccess(Void aVoid) {
-				//throw new RuntimeException("");
-			}
-		}).addOnFailureListener(new OnFailureListener() {
-			@Override
-			public void onFailure(@NonNull Exception e) {
-				//Log.w(TAG, "Transaction failure.", e);
-			}
+		}).addOnSuccessListener(aVoid -> {
+			//throw new RuntimeException("");
+		}).addOnFailureListener(e -> {
+			//Log.w(TAG, "Transaction failure.", e);
 		});
 	}
 }
