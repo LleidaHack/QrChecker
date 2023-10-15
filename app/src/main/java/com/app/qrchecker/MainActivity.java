@@ -55,10 +55,10 @@ public class MainActivity extends AppCompatActivity {
 		refresh.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FirestoreConnector.getUsers(m);
+				ApiConnector.getEventStatus(1,m);
 			}
 		});
-		FirestoreConnector.getUsers(m);
+		ApiConnector.getEventStatus(1,m);
 	}
 
 	public void gotoScan(ScanOptions opt, EatOptions eatType) {
